@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 单位:milliseconds|seconds|minutes|hours。debug为true时，将打印出logback内部日志信息 -->
+<configuration debug="false" scan="false" scanPeriod="30 minutes">
+	<!--定义日志文件的存储地址，勿在 LogBack 的配置中使用相对路径-->
+	<property name="LOG_HOME" value="log/MyCode" />
+	<property name="LOG_NAME" value="MyCode" />
+	<property name="CHECK_LOG_HOME" value="log/Check" />
+	<property name="CHECK_LOG_NAME" value="MyCode" />
+	<!-- 控制台输出 -->
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<!--<layout class="ch.qos.logback.classic.PatternLayout">
+		<layout class="com.myCode.log.Log4jEncodeLayout"> -->
+		<layout class="com.myCode.log.LogbackLayout">
+			<!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别5字符宽，%logger{50}：一般是类名，%msg：日志消息，%n是换行符-->
+			<pattern>%d{MMdd HHmmss SSS} %-5p[%-4t]%c{0}|%m%n</pattern>
+		</layout>
+	</appender>
+	<!-- 按照每天生成日志文件 -->
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_HOME}/${LOG_NAME}_detail.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!--日志文件输出的文件名-->
+			<FileNamePattern>${LOG_HOME}/${LOG_NAME}_detail.log.%d{yyyyMMddHH}</FileNamePattern>
+		</rollingPolicy>
+		<encoder >
+			<!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别5字符宽，%logger{50}：一般是类名，%msg：日志消息，%n是换行符-->
+			<pattern>%d{MMdd HHmmss SSS} %-5p[%-4t]%c{0}|%m%n</pattern>
+			
+		</encoder>
+		<layout class="com.myCode.log.LogbackLayout">
+			<!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别5字符宽，%logger{50}：一般是类名，%msg：日志消息，%n是换行符-->
+			<pattern>%d{MMdd HHmmss SSS} %-5p[%-4t]%c{0}|%m%n</pattern>
+ 		</layout>
+	</appender>
+
+	<!-- 日志输出级别 -->
+	<root level="INFO">
+		<!--<appender-ref ref="STDOUT" />-->
+		<appender-ref ref="FILE" />
+	</root>
+
+	<!-- mpsp日志文件 -->
+	<appender name="MPSPFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_HOME}/${LOG_NAME}_mpsp.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!--日志文件输出的文件名-->
+			<FileNamePattern>${LOG_HOME}/${LOG_NAME}_mpsp.log.%d{yyyyMMddHH}</FileNamePattern>
+		</rollingPolicy>
+		<encoder>
+			<!--格式化输出：%d表示日期，%thread表示线程名，%msg：日志消息，%n是换行符-->
+			<pattern>%d{MMdd HHmmss SSS} %-5p[%-4t]%c{0}|%m%n</pattern>
+		</encoder>
+	</appender>
+	<logger name="mpspLogger" level="INFO" additivity="false"><!-- 简要日志不在详细日志中输出 -->
+		<appender-ref ref="MPSPFILE" />
+	</logger>
+	
+	<!-- 性能日志 -->
+	<appender name="SSFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_HOME}/ss.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!--日志文件输出的文件名-->
+			<FileNamePattern>${LOG_HOME}/ss.log.%d{yyyyMMddHH}</FileNamePattern>
+		</rollingPolicy>
+		<encoder>
+			<!--格式化输出：%d表示日期，%thread表示线程名，%msg：日志消息，%n是换行符-->
+			<pattern>%m,%d{yyyyMMdd HHmmss},%-4t%n</pattern>
+		</encoder>
+	</appender>
+	<logger name="ssLogger" level="INFO" additivity="false"><!-- 简要日志不在详细日志中输出 -->
+		<appender-ref ref="SSFILE" />
+	</logger>
+	
+	<!-- check日志 -->
+	<appender name="CHECKFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${CHECK_LOG_HOME}/ss.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!--日志文件输出的文件名-->
+			<FileNamePattern>${CHECK_LOG_HOME}/ss.log.%d{yyyyMMddHH}</FileNamePattern>
+		</rollingPolicy>
+		<encoder>
+			<!--格式化输出：%d表示日期，%thread表示线程名，%msg：日志消息，%n是换行符-->
+			<pattern>%d{yyyyMMdd HHmmss},%m,%n</pattern>
+		</encoder>
+	</appender>
+	<logger name="checkLogger" level="INFO" additivity="false"><!-- 简要日志不在详细日志中输出 -->
+		<appender-ref ref="CHECKFILE" />
+	</logger>
+	
+	
+	<logger name="com.umpay.http.platform2.SSLog" level="INFO" additivity="false">
+		<appender-ref ref="SSFILE" />
+	</logger>
+	<logger name="com.alibaba.dubbo.rpc.cluster.support.SSLog" level="INFO" additivity="false">
+		<appender-ref ref="SSFILE" />
+	</logger>
+	<logger name="com.alibaba.dubbo.rpc.cluster.support.FailoverClusterInvoker" level="INFO" additivity="false">
+		<appender-ref ref="FILE" />
+	</logger>
+</configuration>
